@@ -6,7 +6,3 @@ df_ypf_ext = pd.read_html(url)
 df_ypl = df_ypf_ext[1]
 
 print(df_ypl)
-
-    
-
-    req = requests.get(url)
