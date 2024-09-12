@@ -7,3 +7,5 @@ Los datos de las acciones corresponden a 5 empresas y se extraerán desde la pá
 Los datos del BCRA se consultarán a partir de las APIs públicas que posee la entidad (https://www.bcra.gob.ar/Catalogo/Content/files/pdf/estadisticascambiarias-v1.pdf).
 
 
+## Ejecución del proyecto.
+python extraccion.py
