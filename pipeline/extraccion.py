@@ -3,6 +3,7 @@ import requests as req
 from typing import Union, Dict, List
 import json  
 
+
 #################Variables##########################
 ##EndPoints a Consultar
 endp_divisas = "Maestros/Divisas"
