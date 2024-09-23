@@ -1,6 +1,7 @@
 import pandas as pd
 import requests as req
 from typing import Union, Dict, List
+from sqlalchemy import create_engine
 import json  
 
 
@@ -12,8 +13,34 @@ endp_cotiz = "Cotizaciones/"
 acciones_list = ["YPF", "ALUAR", "MACRO", "GALICIA", "EDENOR"]
 #################Variables##########################
 
+
+#################Variables de Conexion##########################
+redshift_user = "2024_ariel_rojas"
+redshift_pass = "F9!L2^&6$xQ"
+redshift_endpoint = "redshift-pda-cluster.cnuimntownzt.us-east-2.redshift.amazonaws.com"
+port = 5439  
+database = "pda"
+#################Variables##########################
  
-def obtener_url(endpoint):  
+
+
+
+def carga_dtf_to_bd(df, table): 
+
+    connection_string = f"postgresql://{redshift_user}:{redshift_pass}@{redshift_endpoint}:{port}/{database}"
+    engine = create_engine(connection_string)
+    
+    try:
+        with engine.connect() as connection:
+            print("Conexion Exitosa")
+            
+            df.to_sql(name= table, con=engine, schema='2024_ariel_rojas_schema', if_exists='append', index=False)
+
+    except Exception as e:
+        print(f"Error connecting to Redshift: {e}")
+
+
+def obtener_url_divisas_bcra(endpoint):  
     ##Defino Variable de URL
     base_url = "https://api.bcra.gob.ar/estadisticascambiarias/v1.0/"
     match endpoint:
@@ -22,10 +49,14 @@ def obtener_url(endpoint):
         case "cotizaciones":
             return base_url + "Cotizaciones/"  
 
-
 def obtener_url_moneda_fechas(endpoint, moneda, fechadesde , fechahasta ): 
-    return obtener_url(endpoint) + moneda + "?fechadesde=" + fechadesde + "&fechahasta=" + fechahasta
- 
+    return obtener_url_divisas_bcra(endpoint) + moneda + "?fechadesde=" + fechadesde + "&fechahasta=" + fechahasta
+
+
+def obtener_url_var_econ_bcra_fechas(fechadesde , fechahasta):  
+    ##Defino Variable de URL
+    base_url = "https://api.bcra.gob.ar/estadisticas/v2.0/datosvariable/1/"
+    return base_url + fechadesde + "/" + fechahasta
 
 def obtener_datos(endpoint_url):     
     print(endpoint_url)
@@ -45,6 +76,8 @@ def obtener_datos(endpoint_url):
         # Capturar error de solicitud
         print(f"La petición ha fallado. Error : {e}")
         return None
+    
+
  
  
 def obtener_url_IOL(accion):
@@ -63,11 +96,13 @@ def obtener_url_IOL(accion):
             return basic_url + "EDN" + fin_url
 
 
+
+
 ################################################
 
 ##Traigo info del maestro de divisas del BCRA
 
-maestro_divisas = obtener_datos(obtener_url("divisas"))
+maestro_divisas = obtener_datos(obtener_url_divisas_bcra("divisas"))
 
 if maestro_divisas:
     df_maestro_divisas = pd.DataFrame(maestro_divisas)  
@@ -83,8 +118,19 @@ if cotizaciones_divisa:
     print(df_cotizaciones_divisa)
 
 
+##Traigo info de variables economicas del BCRA
+
+var_economicas_bcra = obtener_datos( obtener_url_var_econ_bcra_fechas(  "2024-09-01" ,  "2024-09-11" ))
+
+if var_economicas_bcra:
+    df_var_economicas = pd.json_normalize(var_economicas_bcra  )
+    print(df_var_economicas)
+
+
+
 ##Traigo info de cotizacion de Acciones de IOL
 
+""""
 df_ext_final = pd.DataFrame()
 
 for x in range(len(acciones_list)):
@@ -98,9 +144,22 @@ for x in range(len(acciones_list)):
 
 
 #Imprimo datos
+
+df_ext_final = df_ext_final.rename(columns={'Fecha Cotización': 'FechaCotizacion', 'Máximo': 'Maximo', 'Mínimo': 'Minimo', 
+                                            'Cierre ajustado': 'CierreAjustado' , 'Volumen Monto' :  'VolumenMonto',
+                                            'Volumen Nominal':'VolumenNominal'})
+
+
 print(df_ext_final)
 print(df_ext_final.count())
+"""
 
+
+
+##Inserto en Base de Datos
+##carga_dtf_to_bd(df_maestro_divisas, "lnd_moneda")
+##carga_dtf_to_bd(df_cotizaciones_divisa, "lnd_cotizaciones_monedas")
+##carga_dtf_to_bd(df_ext_final, "lnd_cotizaciones_acciones")
 
 
 
