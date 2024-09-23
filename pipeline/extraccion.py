@@ -156,6 +156,7 @@ print(df_ext_final.count())
 
 
 
+
 ##Inserto en Base de Datos
 ##carga_dtf_to_bd(df_maestro_divisas, "lnd_moneda")
 ##carga_dtf_to_bd(df_cotizaciones_divisa, "lnd_cotizaciones_monedas")
