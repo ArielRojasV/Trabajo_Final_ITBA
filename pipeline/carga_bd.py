@@ -10,10 +10,13 @@ database = "pda"
 #################Variables de Conexion a Base de Datos##########################
  
 
-##Carga datos a las tablas
-def carga_dtf_to_bd(df, table): 
+## defino datos de conexion
+connection_string = f"postgresql://{redshift_user}:{redshift_pass}@{redshift_endpoint}:{port}/{database}"
 
-    connection_string = f"postgresql://{redshift_user}:{redshift_pass}@{redshift_endpoint}:{port}/{database}"
+
+## Carga datos a las tablas
+def carga_dtf_to_bd(df, table): 
+    
     engine = create_engine(connection_string)
     
     try:
@@ -27,8 +30,7 @@ def carga_dtf_to_bd(df, table):
 
 
 def actualizar_ft_cotizaciones_bd():
-
-    connection_string = f"postgresql://{redshift_user}:{redshift_pass}@{redshift_endpoint}:{port}/{database}"
+    
     engine = create_engine(connection_string)
     conn = engine.raw_connection()   
     cursor = conn.cursor()
@@ -39,3 +41,43 @@ def actualizar_ft_cotizaciones_bd():
         cursor.close()  
         conn.close() 
      
+
+def actualizar_stg_cotizaciones_monedas_bd():
+    
+    engine = create_engine(connection_string)
+    conn = engine.raw_connection()   
+    cursor = conn.cursor()
+ 
+    with cursor:
+        cursor.execute('CALL "2024_ariel_rojas_schema".sp_stg_cotizaciones_monedas_add()')
+        conn.commit()
+        cursor.close()  
+        conn.close() 
+    
+
+def actualizar_stg_cotizaciones_acciones_bd():
+    
+    engine = create_engine(connection_string)
+    conn = engine.raw_connection()   
+    cursor = conn.cursor()
+ 
+    with cursor:
+        cursor.execute('CALL "2024_ariel_rojas_schema".sp_stg_cotizaciones_acciones_add()')
+        conn.commit()
+        cursor.close()  
+        conn.close()  
+
+
+def actualizar_lk_cotizacion_monedas_bd():
+    
+    engine = create_engine(connection_string)
+    conn = engine.raw_connection()   
+    cursor = conn.cursor()
+ 
+    with cursor:
+        cursor.execute('CALL "2024_ariel_rojas_schema".sp_lk_cotizacion_monedas_add()')
+        conn.commit()
+        cursor.close()  
+        conn.close() 
+
+
