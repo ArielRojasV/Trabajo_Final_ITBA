@@ -19,4 +19,4 @@ jobs:
       - name: Run test
         run: |
           cd pipeline/tests
-          run test_read_html.py
+          python test_read_html.py
