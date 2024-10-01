@@ -1,35 +1,10 @@
 import requests as req
 
-
-#################Variables IOL##########################
-##EndPoints a Consultar
-endp_divisas = "Maestros/Divisas"
-endp_cotiz = "Cotizaciones/"
-
-#Lista de Acciones
-acciones_list = ["YPF", "ALUAR", "MACRO", "GALICIA", "EDENOR", "SUPERVIELLE", "TERNIUM"]
-#################Variables IOL##########################
-
-
 ## Obtengo la URL para consultar en IOL
 def obtener_url_IOL(accion):
-    basic_url = "https://iol.invertironline.com/Titulo/DatosHistoricos?simbolo="
+    basic_url = "https://iol.invertironline.com/Titulo/DatosHistoricos?simbolo=" 
     fin_url = "&mercado=BCBA" 
-    match accion:
-        case "YPF": 
-            return basic_url + "YPFD" + fin_url   
-        case "ALUAR":
-            return basic_url + "ALUA" + fin_url
-        case "MACRO":
-            return basic_url + "BMA" + fin_url
-        case "GALICIA":
-            return basic_url + "GGAL" + fin_url
-        case "EDENOR":
-            return basic_url + "EDN" + fin_url
-        case "SUPERVIELLE":
-            return basic_url + "SUPV" + fin_url   
-        case "TERNIUM":
-            return basic_url + "TXAR" + fin_url              
+    return basic_url + accion + fin_url   
 
 
 ## Obtengo URL para consultar datos cambiarios al BCRA
