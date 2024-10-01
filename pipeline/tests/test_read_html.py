@@ -7,8 +7,7 @@ def test_conexion():
 
     req = requests.get(url)
  
-    if req.status_code == 200:  # Validacion de estado de conexion
-        print("URL Con Conexion Activa")
-
+    assert req.status_code == 200  # Validacion de estado de conexion
+       
 
     
