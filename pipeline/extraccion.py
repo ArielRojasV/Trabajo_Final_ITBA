@@ -1,18 +1,21 @@
 from typing import Union, Dict, List
 from datetime import datetime
+from datetime import timedelta 
 import pandas as pd
 import json  
 import config_extraccion as confext
 import carga_bd  
 
 
-###############################################
-
 ################################################
 
 ##Traigo info de las cotizaciones del dolar del BCRA
 
-cotizaciones_divisa = confext.obtener_datos_BCRA( confext.obtener_url_moneda_fechas("cotizaciones" , "USD" ,  "2024-09-25" ,  datetime.today().strftime('%Y-%m-%d') ))
+fecha_ultcarga_cotizaciones = carga_bd.get_fechaultima_cotizacion_moneda()
+fecha_ultcarga_cotizaciones = fecha_ultcarga_cotizaciones[0] + timedelta(days=1) 
+fecha_ultcarga_cotizaciones = fecha_ultcarga_cotizaciones.strftime('%Y-%m-%d') 
+
+cotizaciones_divisa = confext.obtener_datos_BCRA( confext.obtener_url_moneda_fechas("cotizaciones" , "USD" , fecha_ultcarga_cotizaciones,  datetime.today().strftime('%Y-%m-%d') ))
 
 if cotizaciones_divisa:
     df_cotizaciones_divisa = pd.json_normalize(cotizaciones_divisa,  "detalle" , ["fecha"] )
@@ -25,6 +28,8 @@ if cotizaciones_divisa:
 ##Traigo info de cotizacion de Acciones de IOL
 
 acciones = carga_bd.get_codigo_acciones() 
+fecha_ultcarga_acciones = carga_bd.get_fechaultima_cotizacion_accion() 
+
 for accion in acciones:
     df_ext_final = pd.DataFrame()
     url = confext.obtener_url_IOL(str(accion))    
@@ -41,7 +46,7 @@ for accion in acciones:
 
     df_ext_final['FechaCotizacion'] = pd.to_datetime(df_ext_final['FechaCotizacion'] )
 
-    df_ext_final = df_ext_final.loc[(df_ext_final['FechaCotizacion'] >= '2024-09-24')]
+    df_ext_final = df_ext_final.loc[(df_ext_final['FechaCotizacion'] > fecha_ultcarga_acciones[0].strftime('%Y-%m-%d') )]
  
     ##print(df_ext_final.count())
     
@@ -83,5 +88,4 @@ if var_economicas_bcra:
     df_var_economicas = pd.json_normalize(var_economicas_bcra  )
     print(df_var_economicas)
 """
-
-#################################################
+ 
