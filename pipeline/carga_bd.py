@@ -14,6 +14,57 @@ database = "pda"
 connection_string = f"postgresql://{redshift_user}:{redshift_pass}@{redshift_endpoint}:{port}/{database}"
 
 
+def get_fechaultima_cotizacion_accion(): 	
+
+    engine = create_engine(connection_string)
+
+    try:         
+        connection = engine.raw_connection()   
+        cursor = connection.cursor()
+
+		#LLamo a tabla
+        cursor.execute("""select max(dia.desc_tcl_dia) from "2024_ariel_rojas_schema".ft_cotizaciones ftc
+                            inner join "2024_ariel_rojas_schema".lk_tcl_dia dia
+                            on ftc.id_tcl_dia = dia.id_tcl_dia""")   
+        result = cursor.fetchall() 
+
+        return [i[0] for i in result] 
+
+    finally: 
+		
+		#Cierro conexion 
+        if connection: 
+            cursor.close() 
+            connection.close() 
+
+
+
+def get_fechaultima_cotizacion_moneda(): 	
+
+    engine = create_engine(connection_string)
+
+    try:         
+        connection = engine.raw_connection()   
+        cursor = connection.cursor()
+
+		#LLamo a tabla
+        cursor.execute("""select max(dia.desc_tcl_dia) 
+                            from "2024_ariel_rojas_schema".lk_cotizacion_monedas lcm 
+                            inner join "2024_ariel_rojas_schema".lk_tcl_dia dia
+                            on lcm.id_tcl_dia = dia.id_tcl_dia""")   
+        result = cursor.fetchall() 
+
+        return [i[0] for i in result] 
+
+    finally: 
+		
+		#Cierro conexion 
+        if connection: 
+            cursor.close() 
+            connection.close() 
+ 
+
+
 def get_codigo_acciones(): 	
 
     engine = create_engine(connection_string)
