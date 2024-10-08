@@ -6,7 +6,6 @@ import json
 import config_extraccion as confext
 import carga_bd  
 
-
 ################################################
 
 ##Traigo info de las cotizaciones del dolar del BCRA
@@ -63,6 +62,21 @@ def carga_produccion():
     ## Actualizo staging de tablas de cotizaciones de acciones y tabla final
     carga_bd.actualizar_stg_cotizaciones_acciones_bd()
     carga_bd.actualizar_ft_cotizaciones_bd() 
+
+
+##Paso 1 
+extraer_datos_BCRA()
+
+##Paso 2
+extraer_datos_IOL()
+
+##Paso 3
+carga_staging()
+
+##Paso 4
+carga_produccion()
+
+
 
 
 """
