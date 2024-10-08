@@ -47,7 +47,7 @@ def get_fechaultima_cotizacion_moneda():
         connection = engine.raw_connection()   
         cursor = connection.cursor()
 
-		#LLamo a tabla
+		#LLamo a tabla de base de datos
         cursor.execute("""select max(dia.desc_tcl_dia) 
                             from "2024_ariel_rojas_schema".lk_cotizacion_monedas lcm 
                             inner join "2024_ariel_rojas_schema".lk_tcl_dia dia
