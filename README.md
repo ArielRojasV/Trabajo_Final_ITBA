@@ -14,7 +14,8 @@ Los datos del BCRA se consultarán a partir de las APIs públicas que posee la e
 ## Detalles del proyecto
 - Se genero una instancia de Airflow en un contenedor de Docker, el cual orquestara las etapas de carga, transformación y procesamiento.
 - Esta instancia de Airflow utiliza los DAG para definir la secuencialidad de las tareas.
-- Se generaron los métodos para extraer información de IOL a través del método read_html de pandas. Los datos consultados pertenecen a 5 empresas lideres, donde se obtiene los precios de acciones al inicio de la rueda, al final, el minimo, el máximo, los montos operados. El detalle pertence a los 2 ultimos años y se actualiza diariamente. Los datos no se pueden filtrar por fecha y se debe consultar cada cotización de forma independiente.
+- La primera tarea a realizar es la consulta a datos del BCRA (tipo de cambio), la cual se realiza por fecha, a partir de la ultima fecha cargada en la base de datos, se suma un dia y se consulta al endpoint de la entidad monetaria. Los datos extraidos se cargan a una base de datos de "Landing".
+- La segunda tarea es leer los datos de las cotizaciones de acciones en el mercado argentino. El mismo se realiza haciendo Web Scrapping sobre la pagina de InvertirOnline. Desde aqui se leen datos de empresas lideres, donde se obtiene los precios de acciones al inicio de la rueda, al final, el minimo, el máximo, los montos operados. El detalle pertence a los 2 ultimos años y se actualiza diariamente. Los datos no se pueden filtrar por fecha y se debe consultar cada cotización de forma independiente. En este caso el filtrado de los datos se hace en el código, dado que el método generado en Python busca la ultima fecha con cotizaciones cargadas en la base de datos y filtra los resultados obtenidos para cargar solo los datos nuevos.
 
 
 ## Ejecución del proyecto
