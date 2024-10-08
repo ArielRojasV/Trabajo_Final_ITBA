@@ -1,5 +1,6 @@
 import requests as req
 
+
 ## Obtengo la URL para consultar en IOL
 def obtener_url_IOL(accion):
     basic_url = "https://iol.invertironline.com/Titulo/DatosHistoricos?simbolo=" 
