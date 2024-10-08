@@ -1,6 +1,7 @@
 from sqlalchemy import create_engine
 import pandas as pd
 
+
 #################Variables de Conexion a Base de Datos##########################
 redshift_user = "2024_ariel_rojas"
 redshift_pass = "F9!L2^&6$xQ"
