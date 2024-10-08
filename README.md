@@ -8,7 +8,7 @@ Los datos del BCRA se consultarán a partir de las APIs públicas que posee la e
 
 ## Esquema del Proyecto
 
-![DiagramaExtraccion drawio](https://github.com/user-attachments/assets/38dce86f-1ddb-4822-a4a6-e13826be6a67)
+![DiagramaExtraccion drawio (1)](https://github.com/user-attachments/assets/1c35481a-271d-4d80-a213-cfe6167ab9f5)
 
 
 ## Detalles del proyecto
