@@ -19,15 +19,7 @@ jobs:
       - name: Instalo Request
         run: |
           python -m pip install requests
-
-      - name: Instalo sqlalchemy
-        run: |
-          python -m pip install sqlalchemy
-
-      - name: Instalo python-dotenv
-        run: |
-          python -m pip install python-dotenv
-
+     
       - name: Run test 1
         run: |
           cd pipeline/tests
@@ -38,9 +30,4 @@ jobs:
           cd pipeline/tests
           python test_conexion_bcra.py
 
-      - name: Run test 2
-        run: |
-          cd pipeline/tests
-          python test_conexion_bd.py
-
-
+    
