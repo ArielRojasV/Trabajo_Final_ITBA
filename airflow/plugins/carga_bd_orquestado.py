@@ -15,7 +15,7 @@ dbase = os.getenv('database')
 REDSHIFT_SCHEMA = “my_schema”
 
 
-## defino datos de conexion
+## Defino datos de conexion
 connection_string = f"postgresql://{user}:{pasw}@{endp}:{port}/{dbase}"
 engine = create_engine(connection_string)
 

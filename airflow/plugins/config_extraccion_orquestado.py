@@ -47,7 +47,7 @@ def obtener_datos_BCRA(endpoint_url):
 
     except req.exceptions.RequestException as e:
         # Capturar error de solicitud
-        print(f"La petición ha fallado. Error : {e}")
+        print(f"La petición ha fallado con Error : {e}")
         return None
     
 
