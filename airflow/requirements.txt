@@ -4,5 +4,5 @@ numpy
 pandas
 requests
 pytest
-
-
+sqlalchemy-redshift
+python-dotenv
