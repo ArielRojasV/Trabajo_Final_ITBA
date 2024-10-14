@@ -1,31 +1,48 @@
 from sqlalchemy import create_engine
 import pandas as pd
+import os
+from dotenv import load_dotenv
 
+load_dotenv()
 
-#################Variables de Conexion a Base de Datos##########################
-redshift_user = "2024_ariel_rojas"
-redshift_pass = "F9!L2^&6$xQ"
-redshift_endpoint = "redshift-pda-cluster.cnuimntownzt.us-east-2.redshift.amazonaws.com"
-port = 5439  
-database = "pda"
-#################Variables de Conexion a Base de Datos##########################
- 
+user = os.getenv('redshift_user')
+pasw = os.getenv('redshift_pass')
+endp = os.getenv('redshift_endpoint')
+port = os.getenv('port')
+dbase = os.getenv('database')
+   
+
+REDSHIFT_SCHEMA = “my_schema”
+
 
 ## defino datos de conexion
-connection_string = f"postgresql://{redshift_user}:{redshift_pass}@{redshift_endpoint}:{port}/{database}"
+connection_string = f"postgresql://{user}:{pasw}@{endp}:{port}/{dbase}"
+engine = create_engine(connection_string)
 
 
-def get_fechaultima_cotizacion_accion(): 	
 
-    engine = create_engine(connection_string)
+## Carga datos a las tablas
+def carga_dtf_to_bd(df, table): 
+    
+    try:
+        with engine.connect() as connection:
+            #print("Conexion Exitosa")            
+            df.to_sql(name= table, con=engine, schema={REDSHIFT_SCHEMA}., if_exists='append', index=False)
+
+    except Exception as e:
+        print(f"Error conexion a Redshift: {e}")
+
+
+
+def get_fechaultima_cotizacion_accion(): 	   
 
     try:         
         connection = engine.raw_connection()   
         cursor = connection.cursor()
 
 		#LLamo a tabla
-        cursor.execute("""select max(dia.desc_tcl_dia) from "2024_ariel_rojas_schema".ft_cotizaciones ftc
-                            inner join "2024_ariel_rojas_schema".lk_tcl_dia dia
+        cursor.execute(f"""select max(dia.desc_tcl_dia) from {REDSHIFT_SCHEMA}.ft_cotizaciones ftc
+                            inner join {REDSHIFT_SCHEMA}.lk_tcl_dia dia
                             on ftc.id_tcl_dia = dia.id_tcl_dia""")   
         result = cursor.fetchall() 
 
@@ -42,16 +59,14 @@ def get_fechaultima_cotizacion_accion():
 
 def get_fechaultima_cotizacion_moneda(): 	
 
-    engine = create_engine(connection_string)
-
     try:         
         connection = engine.raw_connection()   
         cursor = connection.cursor()
 
 		#LLamo a tabla de base de datos
-        cursor.execute("""select max(dia.desc_tcl_dia) 
-                            from "2024_ariel_rojas_schema".lk_cotizacion_monedas lcm 
-                            inner join "2024_ariel_rojas_schema".lk_tcl_dia dia
+        cursor.execute(f"""select max(dia.desc_tcl_dia) 
+                            from {REDSHIFT_SCHEMA}.lk_cotizacion_monedas lcm 
+                            inner join {REDSHIFT_SCHEMA}.lk_tcl_dia dia
                             on lcm.id_tcl_dia = dia.id_tcl_dia""")   
         result = cursor.fetchall() 
 
@@ -68,14 +83,12 @@ def get_fechaultima_cotizacion_moneda():
 
 def get_codigo_acciones(): 	
 
-    engine = create_engine(connection_string)
-
     try:         
         connection = engine.raw_connection()   
         cursor = connection.cursor()
 
 		#LLamo a tabla
-        cursor.execute("""select desc_sigla from "2024_ariel_rojas_schema".lk_accion where id_flg_activo = 'S'""")   
+        cursor.execute(f"select desc_sigla from {REDSHIFT_SCHEMA}.lk_accion where id_flg_activo = 'S'")   
         result = cursor.fetchall() 
 
         return [i[0].rstrip() for i in result] 
@@ -88,69 +101,79 @@ def get_codigo_acciones():
             connection.close()   
 
 
-## Carga datos a las tablas
-def carga_dtf_to_bd(df, table): 
-    
-    engine = create_engine(connection_string)
-    
-    try:
-        with engine.connect() as connection:
-            print("Conexion Exitosa")            
-            df.to_sql(name= table, con=engine, schema='2024_ariel_rojas_schema', if_exists='append', index=False)
-
-    except Exception as e:
-        print(f"Error conexion a Redshift: {e}")
-
 
 def actualizar_ft_cotizaciones_bd():
-    
-    engine = create_engine(connection_string)
-    connection = engine.raw_connection()   
-    cursor = connection.cursor()
+
+    try:
+        connection = engine.raw_connection()   
+        cursor = connection.cursor()
  
-    with cursor:
-        cursor.execute('CALL "2024_ariel_rojas_schema".sp_ft_cotizaciones_add()')
-        connection.commit()
-        cursor.close()  
-        connection.close() 
+        with cursor:
+            cursor.execute(f'CALL {REDSHIFT_SCHEMA}.sp_ft_cotizaciones_add()')
+            connection.commit()
+
+    finally: 
+		
+		#Cierro conexion 
+        if connection: 
+            cursor.close() 
+            connection.close()   
      
 
+
 def actualizar_stg_cotizaciones_monedas_bd():
-    
-    engine = create_engine(connection_string)
-    connection = engine.raw_connection()   
-    cursor = connection.cursor()
+
+    try:    
+        connection = engine.raw_connection()   
+        cursor = connection.cursor()
  
-    with cursor:
-        cursor.execute('CALL "2024_ariel_rojas_schema".sp_stg_cotizaciones_monedas_add()')
-        connection.commit()
-        cursor.close()  
-        connection.close() 
+        with cursor:
+            cursor.execute(f'CALL {REDSHIFT_SCHEMA}.sp_stg_cotizaciones_monedas_add()')
+            connection.commit()
+    
+    finally: 
+		
+		#Cierro conexion 
+        if connection: 
+            cursor.close() 
+            connection.close()
     
 
+
 def actualizar_stg_cotizaciones_acciones_bd():
-    
-    engine = create_engine(connection_string)
-    connection = engine.raw_connection()   
-    cursor = connection.cursor()
+
+    try:
+        connection = engine.raw_connection()   
+        cursor = connection.cursor()
  
-    with cursor:
-        cursor.execute('CALL "2024_ariel_rojas_schema".sp_stg_cotizaciones_acciones_add()')
-        connection.commit()
-        cursor.close()  
-        connection.close()  
+        with cursor:
+            cursor.execute(f'CALL {REDSHIFT_SCHEMA}.sp_stg_cotizaciones_acciones_add()')
+            connection.commit()
+
+    finally: 
+		
+		#Cierro conexion 
+        if connection: 
+            cursor.close() 
+            connection.close()
+ 
 
 
 def actualizar_lk_cotizacion_monedas_bd():
     
-    engine = create_engine(connection_string)
-    connection = engine.raw_connection()   
-    cursor = connection.cursor()
+    try:
+        connection = engine.raw_connection()   
+        cursor = connection.cursor()
  
-    with cursor:
-        cursor.execute('CALL "2024_ariel_rojas_schema".sp_lk_cotizacion_monedas_add()')
-        connection.commit()
-        cursor.close()  
-        connection.close() 
+        with cursor:
+            cursor.execute(f'CALL {REDSHIFT_SCHEMA}.sp_lk_cotizacion_monedas_add()')
+            connection.commit()
+
+    finally: 
+		
+		#Cierro conexion 
+        if connection: 
+            cursor.close() 
+            connection.close()
 
 
