@@ -66,19 +66,6 @@ def carga_produccion():
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 """
 ##Traigo info del maestro de divisas del BCRA
 

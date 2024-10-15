@@ -10,11 +10,9 @@ user = os.getenv("redshift_user")
 pasw = os.getenv("redshift_pass")
 endp = os.getenv("redshift_endpoint")
 port = os.getenv("port")
-dbase = os.getenv("database")
-   
+dbase = os.getenv("database")   
 
 REDSHIFT_SCHEMA = '"2024_ariel_rojas_schema"'
-
 
 ## Defino datos de conexion
 connection_string = f"postgresql://{user}:{pasw}@{endp}:{port}/{dbase}"
