@@ -23,11 +23,11 @@ jobs:
       - name: Run test 1
         run: |
           cd pipeline/tests
-          python test_read_html.py
+          python -m unittest test_read_html.py
 
       - name: Run test 2
         run: |
           cd pipeline/tests
-          python test_conexion_bcra.py
+          python -m unittest test_conexion_bcra.py
 
     
