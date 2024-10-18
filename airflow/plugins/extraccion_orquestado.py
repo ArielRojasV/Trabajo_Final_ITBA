@@ -79,10 +79,6 @@ if maestro_divisas:
     carga_bd.carga_dtf_to_bd(df_maestro_divisas, "lnd_moneda")
 
 
-#################################################
-"""
-
-""""
 ##Traigo info de variables economicas del BCRA
 
 var_economicas_bcra = confext.obtener_datos_BCRA( confext.obtener_url_var_econ_bcra_fechas(  "2024-09-01" ,  "2024-09-11" ))
