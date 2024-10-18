@@ -23,13 +23,3 @@ class Test_Get_Data_Json(unittest.TestCase):
                                             'cierre' : '1000'})  
         mock_get.assert_called_once_with(url)  
 
-
-"""
-apertura
-máximo
-mínimo
-cierre
-cierreajustado
-volumenmonto
-volumennominal
-"""
