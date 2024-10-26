@@ -29,7 +29,7 @@ def carga_dtf_to_bd(df, table):
 
     except Exception as e:
         print(f"Error conexion a Redshift: {e}")
-        raise e
+        raise
 
 
 
