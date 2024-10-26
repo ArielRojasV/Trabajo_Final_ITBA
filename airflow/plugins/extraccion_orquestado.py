@@ -1,21 +1,19 @@
 from typing import Union, Dict, List
-from datetime import datetime
-from datetime import timedelta 
 import pandas as pd
 import json  
 import carga_bd_orquestado as  carga_bd
 import config_extraccion_orquestado as confext
 
 
-##################################################
-
-##Traigo info de las cotizaciones del dolar del BCRA
+## Traigo info de las cotizaciones del dolar del BCRA    
 def extraer_datos_BCRA():
-    fecha_ultcarga_cotizaciones = carga_bd.get_fechaultima_entidad_bd("moneda"):
-    fecha_ultcarga_cotizaciones = fecha_ultcarga_cotizaciones[0] + timedelta(days=1) 
-    fecha_ultcarga_cotizaciones = fecha_ultcarga_cotizaciones.strftime('%Y-%m-%d') 
+    fecha_ultcarga_cotizaciones = carga_bd.get_fechaultima_entidad_bd("moneda")
+    fecha_desde_cotizaciones = pd.to_datetime(fecha_ultcarga_cotizaciones) +  pd.DateOffset(days=1) 
+    fecha_desde_cotizaciones = fecha_desde_cotizaciones.strftime('%Y-%m-%d')
 
-    cotizaciones_divisa = confext.obtener_datos_BCRA( confext.obtener_url_moneda_fechas("cotizaciones" , "USD" , fecha_ultcarga_cotizaciones,  datetime.today().strftime('%Y-%m-%d') ))
+    fecha_hasta_cotizaciones = pd.Timestamp("today").strftime('%Y-%m-%d')
+
+    cotizaciones_divisa = confext.obtener_datos_BCRA( confext.obtener_url_moneda_fechas("cotizaciones" , "USD" ,  fecha_desde_cotizaciones , fecha_hasta_cotizaciones  ))
 
     if cotizaciones_divisa:
         df_cotizaciones_divisa = pd.json_normalize(cotizaciones_divisa,  "detalle" , ["fecha"] )
@@ -24,11 +22,10 @@ def extraer_datos_BCRA():
         carga_bd.carga_dtf_to_bd(df_cotizaciones_divisa, "lnd_cotizaciones_monedas")
 
 
- ##Extraigo info de la web de IOL
+ ## Extraigo info de la web de IOL
 def extraer_datos_IOL():   
-
+    fecha_ultcarga_acciones = carga_bd.get_fechaultima_entidad_bd("accion")
     acciones = carga_bd.get_codigo_acciones() 
-    fecha_ultcarga_acciones = carga_bd.get_fechaultima_entidad_bd("accion"):
 
     for accion in acciones:
         df_ext_final = pd.DataFrame()
@@ -44,7 +41,7 @@ def extraer_datos_IOL():
 
         df_ext_final['FechaCotizacion'] = pd.to_datetime(df_ext_final['FechaCotizacion'] )
 
-        df_ext_final = df_ext_final.loc[(df_ext_final['FechaCotizacion'] > fecha_ultcarga_acciones[0].strftime('%Y-%m-%d') )]
+        df_ext_final = df_ext_final.loc[ ( df_ext_final['FechaCotizacion'] > fecha_ultcarga_acciones ) ]
      
         carga_bd.carga_dtf_to_bd(df_ext_final, "lnd_cotizaciones_acciones")
     
@@ -59,8 +56,6 @@ def carga_staging():
 def carga_produccion():    
     carga_bd.ejecutar_sp_produccion_bd("sp_lk_cotizacion_monedas_add()")
     carga_bd.ejecutar_sp_produccion_bd("sp_ft_cotizaciones_add()") 
-
- 
 
 
 """
