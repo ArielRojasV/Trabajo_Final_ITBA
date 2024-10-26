@@ -29,6 +29,10 @@ Se simula contar con 3 instancias de bases de datos:
 
     ![image](https://github.com/user-attachments/assets/e20f44ad-bf1a-47b9-81c6-868ae93edda9)
 
+## Esquema de carpetas del proyecto
+
+![image](https://github.com/user-attachments/assets/1f7a5aec-28f8-4887-a7c2-4575bd6512aa)
+
 
 ## Configuracion de la solución
 
@@ -41,7 +45,7 @@ Se simula contar con 3 instancias de bases de datos:
 
    Carga_Datos_lk_tcl_dia.sql: Carga datos a la tabla lk_tcl_dia, pertenecientes a un calendario.
 
-   Las credenciales de base de datos a utilizar (se envio detalle en un txt):
+   Las credenciales de base de datos a utilizar, se envian las mismas en un archivo credenciales.txt:
    
     redshift_user = (redshift_user)
     redshift_pass = (redshift_pass) 
@@ -53,4 +57,11 @@ Se simula contar con 3 instancias de bases de datos:
 2. Realizar el clonado de este repositorio:
    https://github.com/ArielRojasV/Trabajo_Final_ITBA.git
 
-4. 
+3. Dentro de la carpeta airflow/plugins crear un archivo .env con la informacion de las credenciales (copiar la informacion del archivo credenciales.txt)
+
+4. Ubicarse en la carpeta airflow y abrir una terminal.
+   Ejecutar el comando:
+   `docker compose build`
+ 
+
+6. 
