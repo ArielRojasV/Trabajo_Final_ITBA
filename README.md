@@ -1,4 +1,4 @@
-### Proyecto de Extracción y Carga de Datos Financieros
+## Proyecto de Extracción y Carga de Datos Financieros
 
 El objetivo de este proyecto es extraer información de las cotizaciones de una cartera de acciones en el mercado local, y también
 se consultará información del BCRA relativa a ciertos indicadores financieros.
