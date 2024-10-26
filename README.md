@@ -53,15 +53,23 @@ Se simula contar con 3 instancias de bases de datos:
     port = (port)
     database = (database)
 
-
 2. Realizar el clonado de este repositorio:
-   https://github.com/ArielRojasV/Trabajo_Final_ITBA.git
+   `https://github.com/ArielRojasV/Trabajo_Final_ITBA.git`
 
-3. Dentro de la carpeta airflow/plugins crear un archivo .env con la informacion de las credenciales (copiar la informacion del archivo credenciales.txt)
+3. Dentro de la carpeta airflow/plugins crear un archivo .env con la informacion de las credenciales (copiar la informacion del archivo credenciales.txt). Ver esquema de la solución.
 
 4. Ubicarse en la carpeta airflow y abrir una terminal.
    Ejecutar el comando:
    `docker compose build`
- 
 
-6. 
+5. En Docker Desktop inicializar el contenedor
+    ![image](https://github.com/user-attachments/assets/dadc6d43-082d-4be3-b52c-e651095938e6)
+
+6. Abrir un navegador web y entrar a la siguiente URL:
+  `http://localhost:8080/home`
+   Credenciales:
+   user: airflow
+   password: airflow
+
+8. Ejecutar el siguiente pipeline:
+   'etl_pipeline'
