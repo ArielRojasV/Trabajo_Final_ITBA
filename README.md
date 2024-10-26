@@ -31,6 +31,3 @@ Se simula contar con 3 instancias de bases de datos:
     ![image](https://github.com/user-attachments/assets/e20f44ad-bf1a-47b9-81c6-868ae93edda9)
 
 
- 
-## Ejecución del proyecto
-python extraccion.py
