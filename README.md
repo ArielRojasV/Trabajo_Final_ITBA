@@ -39,11 +39,11 @@ Se simula contar con 3 instancias de bases de datos:
 1. Configurar el modelo en la base de datos.
    Para ello se debe ejecutar 3 scripts de bases de datos, en el orden que se menciona (carpeta scripts_bd):
    
-   Script_Crear_Tablas.sql: Genera el esquema de base de datos y las tablas a usar.
+   Script_Crear_Tablas.sql: genera el esquema de base de datos y las tablas a usar.
 
-   Script_Generacion_Stores_Procedures.sql: Agrega los Stores Procedures a utilizarse en la base de datos.
+   Script_Generacion_Stores_Procedures.sql: agrega los Stores Procedures a utilizarse en la base de datos.
 
-   Carga_Datos_lk_tcl_dia.sql: Carga datos a la tabla lk_tcl_dia, pertenecientes a un calendario.
+   Carga_Datos_lk_tcl_dia.sql: carga datos a la tabla lk_tcl_dia, pertenecientes a un calendario.
 
    Las credenciales de base de datos a utilizar, se envian las mismas en un archivo credenciales.txt:
    
@@ -71,5 +71,5 @@ Se simula contar con 3 instancias de bases de datos:
    user: airflow
    password: airflow
 
-8. Ejecutar el siguiente pipeline:
-   'etl_pipeline'
+7. Ejecutar el siguiente pipeline:
+   `etl_pipeline`
