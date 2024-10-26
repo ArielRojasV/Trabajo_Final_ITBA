@@ -79,7 +79,7 @@ Se simula contar con 3 instancias de bases de datos:
 
 sp_lk_cotizacion_monedas_add(): Inserta datos cargados en la tabla stg_cotizaciones_monedas a la tabla lk_cotizacion_monedas, validando que no existan previamente en esta ultima tabla. Se normalizan los datos en la tabla lk.
 
-sp_ft_cotizaciones_add(): Inserta datos a la tabla final ft_cotizaciones a partir de los datos de las tablas stg_cotizaciones_acciones y stg_cotizaciones_monedas. Los datos cargados se normalizan, cargando un id de fecha en lugar de la fecha, un id que identifica a las acciones,
+sp_ft_cotizaciones_add(): Inserta datos a la tabla final ft_cotizaciones a partir de los datos de las tablas stg_cotizaciones_acciones y stg_cotizaciones_monedas, validando que no estén cargados previamente. Los datos cargados se normalizan, cargando un id de fecha en lugar de la fecha, un id que identifica a las acciones,
 además de las métricas finales.
 
 sp_stg_cotizaciones_acciones_add(): Carga los datos en la tabla de staging de cotización de acciones a partir de los datos cargados en landing, validando que no se dupliquen. La tabla de staging tiene los atributos definidos con el formato final.
