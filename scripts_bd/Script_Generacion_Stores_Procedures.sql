@@ -82,7 +82,7 @@ as tbc
 left join "2024_ariel_rojas_schema".ft_cotizaciones as ftc
 on tbc.id_tcl_dia  = ftc.id_tcl_dia 
 and tbc.id_accion = ftc.id_accion 
-where ftc.id_tcl_dia is NULL;
+where ftc.id_accion is NULL;
 
 END;
 
