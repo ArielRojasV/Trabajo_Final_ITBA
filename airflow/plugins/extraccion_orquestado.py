@@ -7,7 +7,7 @@ import carga_bd_orquestado as  carga_bd
 import config_extraccion_orquestado as confext
 
 
-#################################################
+##################################################
 
 ##Traigo info de las cotizaciones del dolar del BCRA
 def extraer_datos_BCRA():

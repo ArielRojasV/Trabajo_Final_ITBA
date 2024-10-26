@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-##Variable esquema de base de datos
+## Variable esquema de base de datos
 REDSHIFT_SCHEMA = '"2024_ariel_rojas_schema"'
 
 ## Defino datos de conexion
@@ -21,13 +21,13 @@ def conexion_to_bd():
     return engine
 
 
-##Cierro sesion
+## Cierro sesion
 def cierroconexion_to_bd(cursor, connection):
     cursor.close() 
     connection.close() 
 
 
-##Queries a ejecutar en base de datos obteniendo fechas
+## Queries a ejecutar en base de datos obteniendo fechas
 def query_ult_fecha_entidad(tabla)
     match tabla:
         case "accion": 
@@ -53,7 +53,7 @@ def carga_dtf_to_bd(df, table):
         raise
 
 
-##Codigo que identifica cada accion en IOL
+## Codigo que busca identificador de cada accion en IOL
 def get_codigo_acciones(): 	
     try:         
         connection = conexion_to_bd().raw_connection()  
@@ -68,7 +68,7 @@ def get_codigo_acciones():
             cierroconexion_to_bd(cursor, connection)
 
 
-##Ultima fecha de dato cargado en la base de datos segun entidad
+## Ultima fecha de dato cargado en la base de datos segun entidad
 def get_fechaultima_entidad_bd(entidad):  
     try:         
         connection = conexion_to_bd().raw_connection()   
@@ -85,7 +85,7 @@ def get_fechaultima_entidad_bd(entidad):
             cierroconexion_to_bd(cursor, connection)
 
 
-##Ejecutar Store Procedure de ambiente Staging
+## Ejecutar Store Procedure de ambiente Staging
 def ejecutar_sp_staging_bd(store_proc):    
     try:
         connection = conexion_to_bd().raw_connection() 
@@ -100,7 +100,7 @@ def ejecutar_sp_staging_bd(store_proc):
             cierroconexion_to_bd(cursor, connection) 
 
 
-##Ejecutar Store Procedure de ambiente produccion
+## Ejecutar Store Procedure de ambiente produccion
 def ejecutar_sp_produccion_bd(store_proc):    
     try:
         connection = conexion_to_bd().raw_connection() 
