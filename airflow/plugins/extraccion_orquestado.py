@@ -58,6 +58,8 @@ def carga_produccion():
     carga_bd.ejecutar_sp_produccion_bd("sp_ft_cotizaciones_add()") 
 
 
+
+
 """
 ##Traigo info del maestro de divisas del BCRA
 
