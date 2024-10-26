@@ -28,7 +28,7 @@ def cierroconexion_to_bd(cursor, connection):
 
 
 ## Queries a ejecutar en base de datos obteniendo fechas
-def query_ult_fecha_entidad(tabla)
+def query_ult_fecha_entidad(tabla):
     match tabla:
         case "accion": 
             return (f"""select max(dia.desc_tcl_dia) from {REDSHIFT_SCHEMA}.ft_cotizaciones ftc
@@ -77,8 +77,10 @@ def get_fechaultima_entidad_bd(entidad):
         query = query_ult_fecha_entidad(entidad)
 
         cursor.execute(query) 
-        result = cursor.fetchall() 
-        return [i[0] for i in result] 
+        resultado = cursor.fetchall() 
+        ultima_fecha = [i[0] for i in resultado] 
+        ultima_fecha = ultima_fecha[0]
+        return ultima_fecha.strftime('%Y-%m-%d') 
 
     finally: 		 
         if connection: 
