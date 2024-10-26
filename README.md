@@ -75,7 +75,7 @@ Se simula contar con 3 instancias de bases de datos:
    `etl_pipeline`
 
 
-# Procedimientos Almacenados:
+### Procedimientos Almacenados:
 
 sp_lk_cotizacion_monedas_add(): Inserta datos cargados en la tabla stg_cotizaciones_monedas a la tabla lk_cotizacion_monedas, validando que no existan previamente en esta ultima tabla. Se normalizan los datos en la tabla lk.
 
