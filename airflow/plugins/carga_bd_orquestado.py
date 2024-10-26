@@ -5,10 +5,8 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-
-
+## Variable esquema de base de datos
 REDSHIFT_SCHEMA = '"2024_ariel_rojas_schema"'
-
 
 ## Defino datos de conexion
 def conexion_to_bd():
@@ -17,20 +15,33 @@ def conexion_to_bd():
     endp = os.getenv("redshift_endpoint")
     port = os.getenv("port")
     dbase = os.getenv("database") 
-      
+
     connection_string = f"postgresql://{user}:{pasw}@{endp}:{port}/{dbase}"
     engine = create_engine(connection_string)
     return engine
 
 
+## Cierro sesion
 def cierroconexion_to_bd(cursor, connection):
     cursor.close() 
     connection.close() 
 
 
+## Queries a ejecutar en base de datos obteniendo fechas
+def query_ult_fecha_entidad(tabla)
+    match tabla:
+        case "accion": 
+            return (f"""select max(dia.desc_tcl_dia) from {REDSHIFT_SCHEMA}.ft_cotizaciones ftc
+                            inner join {REDSHIFT_SCHEMA}.lk_tcl_dia dia
+                            on ftc.id_tcl_dia = dia.id_tcl_dia""")
+        case "moneda":
+            return (f"""select max(dia.desc_tcl_dia) from {REDSHIFT_SCHEMA}.lk_cotizacion_monedas lcm 
+                            inner join {REDSHIFT_SCHEMA}.lk_tcl_dia dia
+                            on lcm.id_tcl_dia = dia.id_tcl_dia""")   
+
+
 ## Carga datos a las tablas
 def carga_dtf_to_bd(df, table): 
-
     connection = conexion_to_bd().connect()  
 
     try:
@@ -42,72 +53,40 @@ def carga_dtf_to_bd(df, table):
         raise
 
 
-
-def get_fechaultima_cotizacion_accion(): 	   
-
-    try:         
-        connection = conexion_to_bd().raw_connection()   
-        cursor = connection.cursor() 
-       
-		#LLamo a tabla
-        cursor.execute(f"""select max(dia.desc_tcl_dia) from {REDSHIFT_SCHEMA}.ft_cotizaciones ftc
-                            inner join {REDSHIFT_SCHEMA}.lk_tcl_dia dia
-                            on ftc.id_tcl_dia = dia.id_tcl_dia""") 
-        result = cursor.fetchall() 
-
-        return [i[0] for i in result] 
-
-    finally: 
-		
-		#Cierro conexion 
-        if connection: 
-            cierroconexion_to_bd(cursor, connection)
-
-
-
-def get_fechaultima_cotizacion_moneda(): 	
-
-    try:         
-        connection = conexion_to_bd().raw_connection()  
-        cursor = connection.cursor()
-
-		#LLamo a tabla de base de datos
-        cursor.execute(f"""select max(dia.desc_tcl_dia) from {REDSHIFT_SCHEMA}.lk_cotizacion_monedas lcm 
-                            inner join {REDSHIFT_SCHEMA}.lk_tcl_dia dia
-                            on lcm.id_tcl_dia = dia.id_tcl_dia""")   
-        result = cursor.fetchall() 
-
-        return [i[0] for i in result] 
-
-    finally: 
-		
-		#Cierro conexion 
-        if connection: 
-            cierroconexion_to_bd(cursor, connection)
- 
-
-
+## Codigo que busca identificador de cada accion en IOL
 def get_codigo_acciones(): 	
-
     try:         
         connection = conexion_to_bd().raw_connection()  
         cursor = connection.cursor()
-
-		#LLamo a tabla
+        
         cursor.execute(f"select desc_sigla from {REDSHIFT_SCHEMA}.lk_accion where id_flg_activo = 'S'")   
         result = cursor.fetchall() 
-
         return [i[0].rstrip() for i in result] 
 
     finally: 
-		
-		#Cierro conexion 
         if connection: 
             cierroconexion_to_bd(cursor, connection)
 
 
-def ejecutar_sp_staging_bd(store_proc):
+## Ultima fecha de dato cargado en la base de datos segun entidad
+def get_fechaultima_entidad_bd(entidad):  
+    try:         
+        connection = conexion_to_bd().raw_connection()   
+        cursor = connection.cursor() 
     
+        query = query_ult_fecha_entidad(entidad)
+
+        cursor.execute(query) 
+        result = cursor.fetchall() 
+        return [i[0] for i in result] 
+
+    finally: 		 
+        if connection: 
+            cierroconexion_to_bd(cursor, connection)
+
+
+## Ejecutar Store Procedure de ambiente Staging
+def ejecutar_sp_staging_bd(store_proc):    
     try:
         connection = conexion_to_bd().raw_connection() 
         cursor = connection.cursor()
@@ -116,15 +95,13 @@ def ejecutar_sp_staging_bd(store_proc):
             cursor.execute(f'CALL {REDSHIFT_SCHEMA}.{store_proc}')
             connection.commit()
 
-    finally: 
-		
-		#Cierro conexion 
+    finally: 		
         if connection: 
             cierroconexion_to_bd(cursor, connection) 
 
 
-def ejecutar_sp_produccion_bd(store_proc):
-    
+## Ejecutar Store Procedure de ambiente produccion
+def ejecutar_sp_produccion_bd(store_proc):    
     try:
         connection = conexion_to_bd().raw_connection() 
         cursor = connection.cursor()
@@ -133,9 +110,7 @@ def ejecutar_sp_produccion_bd(store_proc):
             cursor.execute(f'CALL {REDSHIFT_SCHEMA}.{store_proc}')
             connection.commit()
 
-    finally: 
-		
-		#Cierro conexion 
+    finally: 		
         if connection: 
             cierroconexion_to_bd(cursor, connection) 
 

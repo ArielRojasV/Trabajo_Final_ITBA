@@ -7,11 +7,11 @@ import carga_bd_orquestado as  carga_bd
 import config_extraccion_orquestado as confext
 
 
-#################################################
+##################################################
 
 ##Traigo info de las cotizaciones del dolar del BCRA
 def extraer_datos_BCRA():
-    fecha_ultcarga_cotizaciones = carga_bd.get_fechaultima_cotizacion_moneda()
+    fecha_ultcarga_cotizaciones = carga_bd.get_fechaultima_entidad_bd("moneda"):
     fecha_ultcarga_cotizaciones = fecha_ultcarga_cotizaciones[0] + timedelta(days=1) 
     fecha_ultcarga_cotizaciones = fecha_ultcarga_cotizaciones.strftime('%Y-%m-%d') 
 
@@ -19,17 +19,16 @@ def extraer_datos_BCRA():
 
     if cotizaciones_divisa:
         df_cotizaciones_divisa = pd.json_normalize(cotizaciones_divisa,  "detalle" , ["fecha"] )
-        print(df_cotizaciones_divisa)
-
+        ##print(df_cotizaciones_divisa)
         ##Inserto en Base de Datos
         carga_bd.carga_dtf_to_bd(df_cotizaciones_divisa, "lnd_cotizaciones_monedas")
 
 
-def extraer_datos_IOL():
-    ##Traigo info de cotizacion de Acciones de IOL
+ ##Extraigo info de la web de IOL
+def extraer_datos_IOL():   
 
     acciones = carga_bd.get_codigo_acciones() 
-    fecha_ultcarga_acciones = carga_bd.get_fechaultima_cotizacion_accion() 
+    fecha_ultcarga_acciones = carga_bd.get_fechaultima_entidad_bd("accion"):
 
     for accion in acciones:
         df_ext_final = pd.DataFrame()
@@ -39,8 +38,6 @@ def extraer_datos_IOL():
         df_ext_tab = df_ext[1] 
         df_ext_tab['Accion'] = accion
 
-        #df_ext_final = pd.concat([df_ext_final , df_ext_tab])
-
         df_ext_final = df_ext_tab.rename(columns={'Fecha Cotización': 'FechaCotizacion', 'Máximo': 'Maximo', 'Mínimo': 'Minimo', 
                                             'Cierre ajustado': 'CierreAjustado' , 'Volumen Monto' :  'VolumenMonto',
                                             'Volumen Nominal':'VolumenNominal'})      
@@ -48,29 +45,22 @@ def extraer_datos_IOL():
         df_ext_final['FechaCotizacion'] = pd.to_datetime(df_ext_final['FechaCotizacion'] )
 
         df_ext_final = df_ext_final.loc[(df_ext_final['FechaCotizacion'] > fecha_ultcarga_acciones[0].strftime('%Y-%m-%d') )]
- 
-        ##print(df_ext_final.count())
-    
+     
         carga_bd.carga_dtf_to_bd(df_ext_final, "lnd_cotizaciones_acciones")
     
 
-def carga_staging():    
-    ## Actualizo staging de tablas de monedas y tabla final
+## Actualizo staging de tablas de monedas y tabla final
+def carga_staging():        
     carga_bd.ejecutar_sp_staging_bd("sp_stg_cotizaciones_monedas_add()")
-    carga_bd.ejecutar_sp_produccion_bd("sp_lk_cotizacion_monedas_add()")
-    
-
-def carga_produccion():
-    ## Actualizo staging de tablas de cotizaciones de acciones y tabla final
     carga_bd.ejecutar_sp_staging_bd("sp_stg_cotizaciones_acciones_add()")
+
+
+## Actualizo staging de tablas de cotizaciones de acciones y tabla final
+def carga_produccion():    
+    carga_bd.ejecutar_sp_produccion_bd("sp_lk_cotizacion_monedas_add()")
     carga_bd.ejecutar_sp_produccion_bd("sp_ft_cotizaciones_add()") 
 
-
-
-#extraer_datos_BCRA()
-#extraer_datos_IOL()
-#carga_staging()
-carga_produccion()
+ 
 
 
 """
