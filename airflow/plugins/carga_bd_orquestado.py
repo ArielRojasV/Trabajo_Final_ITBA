@@ -1,31 +1,41 @@
 from sqlalchemy import create_engine
-import pandas as pd
 import os
 import psycopg2
 from dotenv import load_dotenv
 
 load_dotenv()
 
-user = os.getenv("redshift_user")
-pasw = os.getenv("redshift_pass")
-endp = os.getenv("redshift_endpoint")
-port = os.getenv("port")
-dbase = os.getenv("database")   
+
 
 REDSHIFT_SCHEMA = '"2024_ariel_rojas_schema"'
 
+
 ## Defino datos de conexion
-connection_string = f"postgresql://{user}:{pasw}@{endp}:{port}/{dbase}"
-engine = create_engine(connection_string)
+def conexion_to_bd():
+    user = os.getenv("redshift_user")
+    pasw = os.getenv("redshift_pass")
+    endp = os.getenv("redshift_endpoint")
+    port = os.getenv("port")
+    dbase = os.getenv("database") 
+      
+    connection_string = f"postgresql://{user}:{pasw}@{endp}:{port}/{dbase}"
+    engine = create_engine(connection_string)
+    return engine
+
+
+def cierroconexion_to_bd(cursor, connection):
+    cursor.close() 
+    connection.close() 
 
 
 ## Carga datos a las tablas
 def carga_dtf_to_bd(df, table): 
-    
+
+    connection = conexion_to_bd().connect()  
+
     try:
-        with engine.connect() as connection:
-            #print("Conexion Exitosa")            
-            df.to_sql(name= table, con=engine, schema='2024_ariel_rojas_schema', if_exists='append', index=False)
+        with connection:          
+            df.to_sql(name= table, con=conexion_to_bd(), schema='2024_ariel_rojas_schema', if_exists='append', index=False)
 
     except Exception as e:
         print(f"Error conexion a Redshift: {e}")
@@ -36,7 +46,7 @@ def carga_dtf_to_bd(df, table):
 def get_fechaultima_cotizacion_accion(): 	   
 
     try:         
-        connection = engine.raw_connection()   
+        connection = conexion_to_bd().raw_connection()   
         cursor = connection.cursor() 
        
 		#LLamo a tabla
@@ -51,15 +61,14 @@ def get_fechaultima_cotizacion_accion():
 		
 		#Cierro conexion 
         if connection: 
-            cursor.close() 
-            connection.close() 
+            cierroconexion_to_bd(cursor, connection)
 
 
 
 def get_fechaultima_cotizacion_moneda(): 	
 
     try:         
-        connection = engine.raw_connection()   
+        connection = conexion_to_bd().raw_connection()  
         cursor = connection.cursor()
 
 		#LLamo a tabla de base de datos
@@ -74,15 +83,14 @@ def get_fechaultima_cotizacion_moneda():
 		
 		#Cierro conexion 
         if connection: 
-            cursor.close() 
-            connection.close() 
+            cierroconexion_to_bd(cursor, connection)
  
 
 
 def get_codigo_acciones(): 	
 
     try:         
-        connection = engine.raw_connection()   
+        connection = conexion_to_bd().raw_connection()  
         cursor = connection.cursor()
 
 		#LLamo a tabla
@@ -95,83 +103,41 @@ def get_codigo_acciones():
 		
 		#Cierro conexion 
         if connection: 
-            cursor.close() 
-            connection.close()   
+            cierroconexion_to_bd(cursor, connection)
 
 
-
-def actualizar_ft_cotizaciones_bd():
-
-    try:
-        connection = engine.raw_connection()   
-        cursor = connection.cursor()
- 
-        with cursor:
-            cursor.execute(f'CALL {REDSHIFT_SCHEMA}.sp_ft_cotizaciones_add()')
-            connection.commit()
-
-    finally: 
-		
-		#Cierro conexion 
-        if connection: 
-            cursor.close() 
-            connection.close()   
-     
-
-
-def actualizar_stg_cotizaciones_monedas_bd():
-
-    try:    
-        connection = engine.raw_connection()   
-        cursor = connection.cursor()
- 
-        with cursor:
-            cursor.execute(f'CALL {REDSHIFT_SCHEMA}.sp_stg_cotizaciones_monedas_add()')            
-            connection.commit()
-    
-    finally: 
-		
-		#Cierro conexion 
-        if connection: 
-            cursor.close() 
-            connection.close()
-    
-
-
-def actualizar_stg_cotizaciones_acciones_bd():
-
-    try:
-        connection = engine.raw_connection()   
-        cursor = connection.cursor()
- 
-        with cursor:
-            cursor.execute(f'CALL {REDSHIFT_SCHEMA}.sp_stg_cotizaciones_acciones_add()')
-            connection.commit()
-
-    finally: 
-		
-		#Cierro conexion 
-        if connection: 
-            cursor.close() 
-            connection.close()
- 
-
-
-def actualizar_lk_cotizacion_monedas_bd():
+def ejecutar_sp_staging_bd(store_proc):
     
     try:
-        connection = engine.raw_connection()   
+        connection = conexion_to_bd().raw_connection() 
         cursor = connection.cursor()
  
         with cursor:
-            cursor.execute(f'CALL {REDSHIFT_SCHEMA}.sp_lk_cotizacion_monedas_add()')
+            cursor.execute(f'CALL {REDSHIFT_SCHEMA}.{store_proc}')
             connection.commit()
 
     finally: 
 		
 		#Cierro conexion 
         if connection: 
-            cursor.close() 
-            connection.close()
+            cierroconexion_to_bd(cursor, connection) 
+
+
+def ejecutar_sp_produccion_bd(store_proc):
+    
+    try:
+        connection = conexion_to_bd().raw_connection() 
+        cursor = connection.cursor()
+ 
+        with cursor:
+            cursor.execute(f'CALL {REDSHIFT_SCHEMA}.{store_proc}')
+            connection.commit()
+
+    finally: 
+		
+		#Cierro conexion 
+        if connection: 
+            cierroconexion_to_bd(cursor, connection) 
+
 
 

@@ -56,14 +56,21 @@ def extraer_datos_IOL():
 
 def carga_staging():    
     ## Actualizo staging de tablas de monedas y tabla final
-    carga_bd.actualizar_stg_cotizaciones_monedas_bd()
-    carga_bd.actualizar_lk_cotizacion_monedas_bd()
+    carga_bd.ejecutar_sp_staging_bd("sp_stg_cotizaciones_monedas_add()")
+    carga_bd.ejecutar_sp_produccion_bd("sp_lk_cotizacion_monedas_add()")
+    
 
 def carga_produccion():
     ## Actualizo staging de tablas de cotizaciones de acciones y tabla final
-    carga_bd.actualizar_stg_cotizaciones_acciones_bd()
-    carga_bd.actualizar_ft_cotizaciones_bd() 
+    carga_bd.ejecutar_sp_staging_bd("sp_stg_cotizaciones_acciones_add()")
+    carga_bd.ejecutar_sp_produccion_bd("sp_ft_cotizaciones_add()") 
 
+
+
+#extraer_datos_BCRA()
+#extraer_datos_IOL()
+#carga_staging()
+carga_produccion()
 
 
 """
